@@ -1,10 +1,10 @@
 import React from 'react';
 import { ITrack } from '../types/track';
-import { Card, Grid } from '@mui/material';
 import styles from '../styles/TrackItem.module.scss';
-import IconButton from '@mui/material/IconButton';
-import { Delete, Pause, PlayArrow } from '@mui/icons-material';
 import { useRouter } from 'next/router';
+import { useActions } from '../hooks/useActions';
+import { Delete, Pause, PlayArrow } from '@mui/icons-material';
+import { Card, Grid, IconButton } from '@mui/material';
 
 interface TrackItemProps {
 	track: ITrack;
@@ -13,21 +13,26 @@ interface TrackItemProps {
 
 const TrackItem: React.FC<TrackItemProps> = ({ track, active = false }) => {
 	const router = useRouter();
+	const { playTrack, pauseTrack, setActiveTrack } = useActions();
+
+	const play = (e) => {
+		e.stopPropagation();
+		setActiveTrack(track);
+		playTrack();
+	};
 
 	return (
 		<Card
 			className={styles.track}
 			onClick={() => router.push('/tracks/' + track._id)}
 		>
-			{track.name}
-			<IconButton onClick={(e) => e.stopPropagation()}>
-				{active ? <Pause /> : <PlayArrow />}
+			<IconButton onClick={play}>
+				{!active ? <PlayArrow /> : <Pause />}
 			</IconButton>
 			<img
-				src={track.picture}
 				width={70}
 				height={70}
-				alt='track picture'
+				src={'http://localhost:5000/' + track.picture}
 			/>
 			<Grid
 				container
